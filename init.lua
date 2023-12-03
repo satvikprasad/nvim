@@ -1,52 +1,60 @@
 print("Welcome Satvik! How are you doing today?")
 
 vim.g.mapleader = " "
+vim.g.maplocalleader = ","
 
 require("packer").startup(function(use)
+	use 'lervag/vimtex'
+	
+	use 'xuhdev/vim-latex-live-preview'
+
 	use 'CreaturePhil/vim-handmade-hero'
 
+	use "rebelot/kanagawa.nvim"
+	
+	use "rhysd/vim-clang-format"
+
 	use { "wbthomason/packer.nvim" }
+
+	use "lifepillar/vim-solarized8"
 
 	use { "ellisonleao/gruvbox.nvim" }
 	use('nvim-treesitter/nvim-treesitter', {run = ':TSUpdate'})
 	use {
 		'nvim-telescope/telescope.nvim', tag = '0.1.1',
-		 requires = { {'nvim-lua/plenary.nvim'} }
+		requires = { {'nvim-lua/plenary.nvim'} }
 	}
 	use({
-	  "chama-chomo/grail",
-	  -- Optional; default configuration will be used if setup isn't called.
-	  config = function()
-		require("grail").setup()
-	  end,
+		"chama-chomo/grail",
+		-- Optional; default configuration will be used if setup isn't called.
+		config = function()
+			require("grail").setup()
+		end,
 	})
 	use {
-	  'nvim-lualine/lualine.nvim',
-	   requires = { 'kyazdani42/nvim-web-devicons', opt = true }
+		'nvim-lualine/lualine.nvim',
+		requires = { 'kyazdani42/nvim-web-devicons', opt = true }
 	}
 	use { "fatih/vim-go" }
 	use {
 		'VonHeikemen/lsp-zero.nvim',
-  		branch = 'v1.x',
-  		requires = {
-		{'neovim/nvim-lspconfig'},             -- Required
-		{'williamboman/mason.nvim'},           -- Optional
-		{'williamboman/mason-lspconfig.nvim'}, -- Optional
-		{'hrsh7th/nvim-cmp'},         -- Required
-		{'hrsh7th/cmp-nvim-lsp'},     -- Required
-		{'hrsh7th/cmp-buffer'},       -- Optional
-		{'hrsh7th/cmp-path'},         -- Optional
-		{'saadparwaiz1/cmp_luasnip'}, -- Optional
-		{'hrsh7th/cmp-nvim-lua'},     -- Optional
-		{'L3MON4D3/LuaSnip'},             -- Required
-		{'rafamadriz/friendly-snippets'}, -- Optional
-  	},
-	use {"akinsho/toggleterm.nvim", tag = '*' },
-	use "jhlgns/naysayer88.vim",
-	use "terrortylor/nvim-comment",
-
-	use "CreaturePhil/vim-handmade-hero"
-}
+		branch = 'v1.x',
+		requires = {
+			{'neovim/nvim-lspconfig'},             -- Required
+			{'williamboman/mason.nvim'},           -- Optional
+			{'williamboman/mason-lspconfig.nvim'}, -- Optional
+			{'hrsh7th/nvim-cmp'},         -- Required
+			{'hrsh7th/cmp-nvim-lsp'},     -- Required
+			{'hrsh7th/cmp-buffer'},       -- Optional
+			{'hrsh7th/cmp-path'},         -- Optional
+			{'saadparwaiz1/cmp_luasnip'}, -- Optional
+			{'hrsh7th/cmp-nvim-lua'},     -- Optional
+			{'L3MON4D3/LuaSnip'},             -- Required
+			{'rafamadriz/friendly-snippets'}, -- Optional
+		},
+		use {"akinsho/toggleterm.nvim", tag = '*' },
+		use "terrortylor/nvim-comment",
+	}
 end)
 
 -- some
@@ -64,12 +72,13 @@ vim.keymap.set('n', '<leader>f', function()
 	require('telescope.builtin').current_buffer_fuzzy_find(require('telescope.themes').get_dropdown {
 		winblend = 10,
 
-  		previewer = false,
-    })
+		previewer = false,
+	})
 end, { desc = '[/] Fuzzily search in current buffer' })
 
 vim.keymap.set('n', '<leader>p', require('telescope.builtin').find_files, { desc = '[S]earch [F]iles' })
 vim.keymap.set('n', '<M-p>', require('telescope.builtin').find_files, { desc = '[S]earch [F]iles' })
+vim.keymap.set('n', '<M-g>', require('telescope.builtin').git_files, { desc = '[S]earch [F]iles' })
 vim.keymap.set('n', '<leader>sh', require('telescope.builtin').help_tags, { desc = '[S]earch [H]elp' })
 vim.keymap.set('n', '<leader>sw', require('telescope.builtin').grep_string, { desc = '[S]earch current [W]ord' })
 vim.keymap.set('n', '<leader>sg', require('telescope.builtin').live_grep, { desc = '[S]earch by [G]rep' })
@@ -77,10 +86,8 @@ vim.keymap.set('n', '<leader>sd', require('telescope.builtin').diagnostics, { de
 
 -- TREESITTER
 require'nvim-treesitter.configs'.setup {
-
 	ensure_installed = {"c", "lua", "vim", "go", "javascript", "typescript", "rust"},
 	highlight = {
-
 		enable = false,
 	}
 }
@@ -116,7 +123,6 @@ lsp.ensure_installed({
 	"gopls",
 	"eslint",
 	"rust_analyzer",
-
 })
 
 lsp.set_preferences({
@@ -128,15 +134,21 @@ lsp.on_attach(function(client, bufnr)
 	vim.keymap.set("n", "gd", function() vim.lsp.buf.definition() end, opts)
 end)
 
+lsp.set_server_config({
+	on_init = function(client)
+		client.server_capabilities.semanticTokensProvider = nil
+	end,
+})
+
 lsp.setup()
 
 vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
-	vim.lsp.diagnostic.on_publish_diagnostics, {
-		signs = false,
+vim.lsp.diagnostic.on_publish_diagnostics, {
+	signs = false,
 
-		virtual_text = true,
-		underline = false,
-	}
+	virtual_text = true,
+	underline = false,
+}
 )
 
 -- COMMENT
@@ -151,32 +163,31 @@ require("toggleterm").setup{
 	open_mapping = [[<M-j>]]
 }
 
+
 -- COLORSCHEME
-vim.cmd("colorscheme handmade-hero")
+vim.cmd("colorscheme gruvbox")
 
 -- Adding the same comment color in each theme
 vim.cmd([[
 
-	augroup CustomCommentCollor
-		autocmd!
+augroup CustomCommentCollor
+autocmd!
 
-		autocmd VimEnter * hi Comment guifg=#2ea542
-	augroup END
+autocmd VimEnter * hi Comment guifg=#2ea542
+augroup END
 ]])
 
 -- Disable annoying match brackets and all the jaz
 vim.cmd([[
-	augroup CustomHI
-		autocmd!
-		autocmd VimEnter * NoMatchParen 
-	augroup END
+augroup CustomHI
+autocmd!
+autocmd VimEnter * NoMatchParen 
+augroup END
 ]])
 
 vim.o.background = "dark"
 
 vim.keymap.set("i", "jj", "<Esc>")
-
-vim.opt.guicursor = "i:block"
 
 vim.opt.tabstop = 4
 vim.opt.shiftwidth = 4
@@ -198,3 +209,8 @@ vim.o.timeoutlen = 300
 
 --vim.o.completeopt = 'menuone,noselect'
 vim.o.termguicolors = true
+vim.g.vimtex_compiler_method = 'latexrun'
+
+vim.cmd [[
+let g:clang_format#auto_format = 1
+]]
